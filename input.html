@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your input · SuperWho</title>
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="input-page">
+  <header class="site-header">
+    <a class="brand" href="index.html">
+      <span class="name">SuperWho</span>
+      <span class="by">by FireSnatchers</span>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="index.html">Walkthrough</a>
+      <a href="input.html" class="active">Your input</a>
+    </nav>
+    <div class="prep">Private · Rosa &amp; Josh</div>
+  </header>
+
+  <main>
+    <div class="wrap" id="input-flow">
+      <div id="q-card" class="q-card">
+        <div class="progress-bar" id="q-progress" aria-hidden="true"><span></span></div>
+        <p class="q-step" id="q-step">Question 1 of 7</p>
+        <h1 id="q-text">What would you like this business to accomplish for your family over the next 12 months and five years?</h1>
+        <div>
+          <label class="visually-hidden" for="q-answer" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);">Your answer</label>
+          <textarea id="q-answer" rows="5" placeholder="Write a little, in your own words."></textarea>
+        </div>
+
+        <div id="react-block" style="display:none">
+          <p class="lede" style="margin-bottom:18px">For each path, choose thumbs up, questions, or not for us. Then leave any other comment for Jim.</p>
+          <div class="react-row">
+            <h3>Investor property research</h3>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="r1" value="up"><span>Thumbs up</span></label>
+              <label class="chip"><input type="radio" name="r1" value="q"><span>Questions</span></label>
+              <label class="chip"><input type="radio" name="r1" value="no"><span>Not for us</span></label>
+            </div>
+          </div>
+          <div class="react-row">
+            <h3>Commercial property activation</h3>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="r2" value="up"><span>Thumbs up</span></label>
+              <label class="chip"><input type="radio" name="r2" value="q"><span>Questions</span></label>
+              <label class="chip"><input type="radio" name="r2" value="no"><span>Not for us</span></label>
+            </div>
+          </div>
+          <div class="react-row">
+            <h3>Deal sourcing / wholesaling</h3>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="r3" value="up"><span>Thumbs up</span></label>
+              <label class="chip"><input type="radio" name="r3" value="q"><span>Questions</span></label>
+              <label class="chip"><input type="radio" name="r3" value="no"><span>Not for us</span></label>
+            </div>
+          </div>
+          <div class="react-row">
+            <h3>Light residential renovations</h3>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="r4" value="up"><span>Thumbs up</span></label>
+              <label class="chip"><input type="radio" name="r4" value="q"><span>Questions</span></label>
+              <label class="chip"><input type="radio" name="r4" value="no"><span>Not for us</span></label>
+            </div>
+          </div>
+          <div class="react-row">
+            <h3>Land Bank rehabilitation</h3>
+            <div class="chips">
+              <label class="chip"><input type="radio" name="r5" value="up"><span>Thumbs up</span></label>
+              <label class="chip"><input type="radio" name="r5" value="q"><span>Questions</span></label>
+              <label class="chip"><input type="radio" name="r5" value="no"><span>Not for us</span></label>
+            </div>
+          </div>
+        </div>
+
+        <div id="send-block" style="display:none;margin-top:18px">
+          <label for="comments" style="display:block;font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Anything else we should know?</label>
+          <textarea id="comments" rows="4" placeholder="Questions, concerns, or something we missed."></textarea>
+          <div class="q-nav">
+            <button class="btn fire" type="button" id="send-btn">Send to Jim</button>
+          </div>
+          <p class="calc-note">This preview does not send your responses.</p>
+        </div>
+
+        <div class="q-nav">
+          <button class="btn" type="button" id="q-back">Back</button>
+          <button class="btn fire" type="button" id="q-next">Next</button>
+        </div>
+      </div>
+
+      <div id="thanks" class="thanks">
+        <p class="q-step">Got it</p>
+        <h1>Thank you.</h1>
+        <p class="lede">In a live version, this would go to Jim. In this preview, nothing was sent. You can go back through the walkthrough or keep a question in the box below.</p>
+        <p><a class="btn" href="index.html">Return to the walkthrough</a></p>
+      </div>
+
+      <div class="ask">
+        <h2>Ask SuperWho a question</h2>
+        <p class="lede">A place to jot a question about this review. In a later version, it would be answered here. In this preview, nothing is sent.</p>
+        <div class="ask-row">
+          <input type="text" id="askq" placeholder="Type a question about this review">
+          <button class="btn cyan" type="button" id="ask-btn">Ask</button>
+        </div>
+        <p class="hint" id="ask-hint"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">SuperWho by FireSnatchers · Private link for Rosa &amp; Josh</footer>
+  <script src="site.js"></script>
+</body>
+</html>
