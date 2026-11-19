@@ -126,35 +126,35 @@
       city: "Detroit 48224",
       offer: "2 bed, 1 bath, 714 sq ft. Auction starting at $1,000, dated November 13.",
       why: "Listed as a small-house renovation cost test.",
-      note: "Unverified research only. Listing status must be rechecked — the auction date was November 13."
+      note: "Unverified research only. The auction date was November 13, so we’ll recheck the status before doing anything."
     },
     liberal: {
       title: "15693 Liberal St",
       city: "Detroit 48205",
       offer: "3 bed, 1 bath, 889 sq ft. Own It Now, $1,000.",
       why: "Listed for entry-level resale or rental analysis.",
-      note: "Unverified research only. Statuses changed around November 13 and must be rechecked."
+      note: "Unverified research only. Statuses changed around November 13, so we’ll recheck before doing anything."
     },
     joann: {
       title: "18030 Joann St",
       city: "Detroit 48205",
       offer: "3 bed, 1 bath, 1,210 sq ft. Own It Now, $1,000.",
       why: "Listed as a larger rehabilitation comparison.",
-      note: "Unverified research only. Statuses changed around November 13 and must be rechecked."
+      note: "Unverified research only. Statuses changed around November 13, so we’ll recheck before doing anything."
     },
     monterey: {
       title: "2645 Monterey St",
       city: "Detroit 48206",
       offer: "6 bed, 2 bath, 2,600 sq ft. Own It Now, $1,000.",
       why: "Listed as a high-complexity stress test.",
-      note: "Unverified research only. Statuses changed around November 13 and must be rechecked."
+      note: "Unverified research only. Statuses changed around November 13, so we’ll recheck before doing anything."
     },
     sanjuan: {
       title: "15493 San Juan Dr",
       city: "Detroit 48221",
       offer: "4 bed, 2 bath, 1,344 sq ft. Auction opening at $1,100, dated November 20.",
       why: "Listed for a neighborhood / exit comparison.",
-      note: "Unverified research only. Listing details were observed in mid-November 2026 research and must be rechecked."
+      note: "Unverified research only, observed in mid-November 2026. We’ll recheck the details before doing anything."
     }
   };
 
@@ -176,7 +176,7 @@
         "<dt>Why it was listed</dt><dd>" + p.why + "</dd>" +
         "<dt>Status</dt><dd>" + p.note + "</dd>" +
         "</dl>" +
-        "<p class='calc-note'>Land Bank homes are generally sold as-is and often carry rehabilitation and occupancy obligations, commonly including a six-month target, with possible extensions. Missing those requirements can put ownership at risk. This is not a recommendation to bid or buy.</p>";
+        "<p class='calc-note'>Land Bank homes are generally sold as-is and often carry rehabilitation and occupancy obligations, commonly including a six-month target, with possible extensions. Missing those requirements can put ownership at risk, so we’d plan for them together before any bid. This is not a recommendation to bid or buy.</p>";
     }
 
     pins.forEach(function (pin) {
@@ -526,12 +526,12 @@
     "How much capital would you be comfortable putting at risk initially, without affecting family security?",
     "How much time could each of you realistically commit each week while employed?",
     "Which parts of real estate interest you most, and which would you prefer to avoid?",
-    "What local relationships, resources, or capabilities could you legitimately and appropriately access?",
+    "What local relationships, resources, or skills could we appropriately draw on together, within the limits of your jobs?",
     "Would you prefer larger profits from occasional transactions, or smaller profits from repeatable activity?",
     "What would convince you that this business is ready to grow? What proof would you want before expanding or leaving employment?"
   ];
   var HINTS = [
-    "Write a little, in your own words.",
+    "A few words is plenty. There are no wrong answers.",
     "A range is fine, including what you would not want to risk.",
     "Include any limits from work and family commitments.",
     "Buying, researching, negotiating, managing, renovating, commercial property, or other work.",

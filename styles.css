@@ -1,4 +1,4 @@
-@import url("fonts.css");
+@import url("fonts.css?v=3");
 
 :root {
   --bg: #07080b;
@@ -15,7 +15,7 @@
   --danger: #ff4d6a;
   --ok: #3dff9a;
   --sans: "IBM Plex Sans", "Helvetica Neue", sans-serif;
-  --display: "Syne", "Arial Black", sans-serif;
+  --display: "Bricolage Grotesque", "Arial Black", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, monospace;
   --serif: "Newsreader", Georgia, serif;
 }
@@ -75,7 +75,7 @@ button { cursor: pointer; }
   font-family: var(--display);
   font-weight: 800;
   font-size: 22px;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.025em;
 }
 .brand .by {
   font-family: var(--mono);
@@ -208,7 +208,7 @@ button { cursor: pointer; }
   font-weight: 800;
   font-size: clamp(64px, 10vw, 150px);
   line-height: 0.8;
-  letter-spacing: -0.07em;
+  letter-spacing: -0.04em;
   color: transparent;
   -webkit-text-stroke: 1px rgba(255,59,0,0.28);
   user-select: none;
@@ -228,9 +228,9 @@ button { cursor: pointer; }
 .hero h1 {
   font-family: var(--display);
   font-weight: 800;
-  font-size: clamp(40px, 6.5vw, 86px);
+  font-size: clamp(42px, 6.8vw, 92px);
   line-height: 0.86;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.035em;
   margin: 0 0 18px;
   max-width: 15ch;
   position: relative;
@@ -305,7 +305,7 @@ h2 {
   font-family: var(--display);
   font-weight: 800;
   font-size: clamp(32px, 5vw, 64px);
-  letter-spacing: -0.045em;
+  letter-spacing: -0.03em;
   line-height: 0.95;
   margin: 0 0 16px;
 }
@@ -405,7 +405,7 @@ h2 {
   font-family: var(--display);
   font-weight: 800;
   font-size: 28px;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   margin: 4px 0 0;
   line-height: 1;
 }
@@ -479,7 +479,7 @@ h2 {
   font-family: var(--display);
   font-weight: 800;
   font-size: 26px;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   margin: 0 0 8px;
 }
 .detail dl { margin: 16px 0 0; }
@@ -676,7 +676,7 @@ input[type="range"]::-moz-range-thumb {
   font-weight: 800;
   font-size: 28px;
   margin: 0 0 6px;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 .week p { margin: 0; color: var(--muted); max-width: 60ch; }
 
@@ -730,7 +730,7 @@ input[type="range"]::-moz-range-thumb {
   font-family: var(--display);
   font-weight: 800;
   font-size: clamp(26px, 3.6vw, 42px);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.025em;
   line-height: 1.05;
   margin: 0 0 16px;
 }
