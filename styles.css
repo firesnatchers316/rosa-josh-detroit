@@ -894,3 +894,7 @@ input[type="range"]::-moz-range-thumb {
   .kpi .val { font-size: 32px; }
   .hero-bgword { font-size: 22vw; left: 0; }
 }
+
+/* Flip cards size to their taller face so buttons never get covered */
+.path-inner { display: grid; height: auto; }
+.path-face { position: relative; inset: auto; grid-area: 1 / 1; min-height: 280px; }
