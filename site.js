@@ -17,6 +17,96 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
   }
 
+  /* ---------- Chief inbox (open pings, form, taps) ---------- */
+  var SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbz4uTgUjQVmy40esAxd9kfrKK0LL83d0ZJwzP4aMHLWcwrAM3-ik2wQO5I2Z_yzsXa0/exec'; // DEPLOYED_EXEC
+  var SHARED_KEY = 'detroit-rj-lAyL1uRlCqQwVQQGPeQWlM8U';
+
+  function isSelftest_() {
+    try { return new URLSearchParams(location.search).get('selftest') === '1'; }
+    catch (e) { return false; }
+  }
+
+  function postInbox_(action, payload) {
+    if (!SUBMIT_URL || !SHARED_KEY) return Promise.reject(new Error('inbox not wired'));
+    var body = {};
+    if (payload) {
+      Object.keys(payload).forEach(function (k) { body[k] = payload[k]; });
+    }
+    body.action = action;
+    body.key = SHARED_KEY;
+    body.page = location.pathname + location.search;
+    if (isSelftest_()) body.selftest = true;
+    var data = JSON.stringify(body);
+    return fetch(SUBMIT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: data,
+      keepalive: true
+    }).then(function (res) { return res.json().catch(function () { return { ok: false }; }); });
+  }
+
+  function openPing_() {
+    if (!SUBMIT_URL) return;
+    var flag = 'detroit-open-ping';
+    try {
+      if (!isSelftest_() && sessionStorage.getItem(flag)) return;
+      sessionStorage.setItem(flag, '1');
+    } catch (e) {}
+    var payload = {};
+    if (isSelftest_()) {
+      payload.selftest = true;
+      payload.page = location.pathname + '?selftest=1';
+    }
+    postInbox_('open', payload).catch(function () {});
+  }
+
+  var tapQueue = [];
+  var tapTimer = null;
+  var tapSession = '';
+  try {
+    tapSession = sessionStorage.getItem('detroit-tap-session') || '';
+    if (!tapSession) {
+      tapSession = 'd-' + Math.random().toString(36).slice(2, 10);
+      sessionStorage.setItem('detroit-tap-session', tapSession);
+    }
+  } catch (e) { tapSession = 'd-' + Math.random().toString(36).slice(2, 10); }
+
+  function flushTaps_() {
+    tapTimer = null;
+    if (!tapQueue.length || !SUBMIT_URL) { tapQueue = []; return; }
+    var batch = tapQueue.slice(0, 25);
+    tapQueue = tapQueue.slice(batch.length);
+    var payload = { session: tapSession, events: batch };
+    if (isSelftest_()) payload.selftest = true;
+    postInbox_('taps', payload).then(function () {
+      if (tapQueue.length) flushTaps_();
+    }).catch(function () {
+      tapQueue = batch.concat(tapQueue).slice(0, 80);
+    });
+  }
+
+  function logTap_(type, target, step) {
+    tapQueue.push({
+      type: type || 'tap',
+      target: String(target || '').slice(0, 40),
+      step: String(step || '').slice(0, 40),
+      t: new Date().toISOString()
+    });
+    if (tapQueue.length >= 10) { if (tapTimer) clearTimeout(tapTimer); flushTaps_(); return; }
+    if (tapTimer) clearTimeout(tapTimer);
+    tapTimer = setTimeout(flushTaps_, 1500);
+  }
+
+  function setupNavTaps_() {
+    document.addEventListener('click', function (e) {
+      var a = e.target && e.target.closest && e.target.closest('header .nav a, header .brand, a.btn');
+      if (!a) return;
+      var href = a.getAttribute('href') || a.textContent || 'nav';
+      logTap_('nav', href, (location.pathname || '').split('/').pop() || 'index');
+    }, true);
+  }
+
+
   /* ---------- reveal + timeline ---------- */
   function setupReveal() {
     var nodes = $all(".reveal, .week");
@@ -101,6 +191,7 @@
         b.addEventListener("click", function (e) {
           e.preventDefault();
           c.classList.toggle("flipped");
+          logTap_("flip", c.getAttribute("data-path") || "path", c.classList.contains("flipped") ? "back" : "front");
         });
       });
       var pick = c.querySelector("[data-pick]");
@@ -108,6 +199,7 @@
         pick.addEventListener("click", function (e) {
           e.preventDefault();
           var id = c.getAttribute("data-path");
+          logTap_("tap", "pick-" + (id || "path"), "paths");
           var i = picked.indexOf(id);
           if (i === -1) picked.push(id);
           else picked.splice(i, 1);
@@ -180,7 +272,7 @@
     }
 
     pins.forEach(function (pin) {
-      pin.addEventListener("click", function () { show(pin.getAttribute("data-id")); });
+      pin.addEventListener("click", function () { var id = pin.getAttribute("data-id"); show(id); logTap_("pin", id, "map"); });
       pin.addEventListener("keydown", function (e) {
         if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(pin.getAttribute("data-id")); }
       });
@@ -494,7 +586,7 @@
     setupCalcCountUp();
 
     $all(".path-switch button").forEach(function (b) {
-      b.addEventListener("click", function () { applyPath(b.getAttribute("data-calc-path")); });
+      b.addEventListener("click", function () { var id = b.getAttribute("data-calc-path"); applyPath(id); logTap_("calc", "path-" + id, "calculator"); });
     });
     $all("[data-bind]").forEach(function (inp) {
       inp.addEventListener("input", function () {
@@ -503,6 +595,7 @@
         var out = inp.closest(".ctrl") && inp.closest(".ctrl").querySelector("output");
         if (out) out.textContent = formatBound(key, state[key]);
         refresh();
+        logTap_("calc", key, "calculator");
       });
     });
 
@@ -583,6 +676,7 @@
     nextBtn.addEventListener("click", function () {
       if (step < 7) {
         answers[step] = ta.value;
+        logTap_("form", "next", "q" + (step + 1));
         step += 1;
         show();
       }
@@ -590,17 +684,46 @@
     backBtn.addEventListener("click", function () {
       if (step > 0 && step <= 7) answers[Math.min(step, 6)] = ta.value;
       if (step > 0) {
+        logTap_("form", "back", "q" + (step + 1));
         step -= 1;
         nextBtn.style.display = "";
         show();
       }
     });
     var send = $("#send-btn");
+    function collectReactions() {
+      var out = {};
+      for (var i = 1; i <= 5; i++) {
+        var el = root.querySelector('input[name="r' + i + '"]:checked');
+        out["r" + i] = el ? el.value : "";
+      }
+      return out;
+    }
     if (send) {
       send.addEventListener("click", function (e) {
         e.preventDefault();
-        formCard.style.display = "none";
-        thanks.classList.add("show");
+        logTap_("form", "send", "submit");
+        var hint = $("#send-hint");
+        send.disabled = true;
+        if (hint) hint.textContent = "Sending…";
+        var comments = ($("#comments") && $("#comments").value) || "";
+        postInbox_("submit", {
+          answers: answers.slice(),
+          reactions: collectReactions(),
+          comments: comments
+        }).then(function (res) {
+          if (res && res.ok) {
+            formCard.style.display = "none";
+            thanks.classList.add("show");
+            if (hint) hint.textContent = "";
+          } else {
+            send.disabled = false;
+            if (hint) hint.textContent = "It didn't go through. Please try again.";
+          }
+        }).catch(function () {
+          send.disabled = false;
+          if (hint) hint.textContent = "It didn't go through. Please try again.";
+        });
       });
     }
     var askBtn = $("#ask-btn");
@@ -608,7 +731,26 @@
       askBtn.addEventListener("click", function (e) {
         e.preventDefault();
         var h = $("#ask-hint");
-        if (h) h.textContent = "This preview does not send questions yet.";
+        var q = (($("#askq") && $("#askq").value) || "").trim();
+        if (!q) {
+          if (h) h.textContent = "Type a question first, then tap Ask.";
+          return;
+        }
+        logTap_("form", "ask", "ask");
+        askBtn.disabled = true;
+        if (h) h.textContent = "Sending…";
+        postInbox_("ask", { question: q }).then(function (res) {
+          askBtn.disabled = false;
+          if (res && res.ok) {
+            if (h) h.textContent = "Sent to Jim and the team.";
+            if ($("#askq")) $("#askq").value = "";
+          } else {
+            if (h) h.textContent = "It didn't go through. Please try again.";
+          }
+        }).catch(function () {
+          askBtn.disabled = false;
+          if (h) h.textContent = "It didn't go through. Please try again.";
+        });
       });
     }
 
@@ -630,5 +772,8 @@
     setupMap();
     setupCalculator();
     setupInput();
+    setupNavTaps_();
+    openPing_();
+    window.addEventListener("pagehide", function () { flushTaps_(); });
   });
 })();
