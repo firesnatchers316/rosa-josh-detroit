@@ -46,10 +46,10 @@
   }
 
   function openPing_() {
-    if (!SUBMIT_URL) return;
+    if (!SUBMIT_URL) return Promise.resolve({ ok: false, error: 'not wired' });
     var flag = 'detroit-open-ping';
     try {
-      if (!isSelftest_() && sessionStorage.getItem(flag)) return;
+      if (!isSelftest_() && sessionStorage.getItem(flag)) return Promise.resolve({ ok: true, skipped: true });
       sessionStorage.setItem(flag, '1');
     } catch (e) {}
     var payload = {};
@@ -57,8 +57,11 @@
       payload.selftest = true;
       payload.page = location.pathname + '?selftest=1';
     }
-    postInbox_('open', payload).catch(function () {});
+    return postInbox_('open', payload).catch(function (err) { return { ok: false, error: String(err && err.message || err) }; });
   }
+
+  var flippedSeen = [];
+  var calcTouched = false;
 
   var tapQueue = [];
   var tapTimer = null;
@@ -191,6 +194,8 @@
         b.addEventListener("click", function (e) {
           e.preventDefault();
           c.classList.toggle("flipped");
+          var fid = c.getAttribute("data-path") || "path";
+          if (flippedSeen.indexOf(fid) === -1) flippedSeen.push(fid);
           logTap_("flip", c.getAttribute("data-path") || "path", c.classList.contains("flipped") ? "back" : "front");
         });
       });
@@ -586,7 +591,7 @@
     setupCalcCountUp();
 
     $all(".path-switch button").forEach(function (b) {
-      b.addEventListener("click", function () { var id = b.getAttribute("data-calc-path"); applyPath(id); logTap_("calc", "path-" + id, "calculator"); });
+      b.addEventListener("click", function () { var id = b.getAttribute("data-calc-path"); applyPath(id); calcTouched = true; logTap_("calc", "path-" + id, "calculator"); });
     });
     $all("[data-bind]").forEach(function (inp) {
       inp.addEventListener("input", function () {
@@ -595,6 +600,7 @@
         var out = inp.closest(".ctrl") && inp.closest(".ctrl").querySelector("output");
         if (out) out.textContent = formatBound(key, state[key]);
         refresh();
+        calcTouched = true;
         logTap_("calc", key, "calculator");
       });
     });
@@ -764,6 +770,196 @@
     window.__inputGo = function (n) { step = n; nextBtn.style.display = n < 7 ? "" : "none"; show(); };
   }
 
+
+  /* ---------- send your take (index) ---------- */
+  var PATH_NAMES = {
+    research: "Path 1 · Investor property research",
+    activation: "Path 2 · Commercial property activation",
+    wholesale: "Path 3 · Deal sourcing / wholesaling",
+    reno: "Path 4 · Light residential renovations",
+    landbank: "Path 5 · Land Bank rehabilitation"
+  };
+  var CALC_NAMES = { flip: "Flip", wholesale: "Wholesale", research: "Research reports", activation: "Commercial activation" };
+  var SELFTEST_LABEL = "TEST from Chief selftest. SELFTEST, NOT from Rosa or Josh.";
+
+  function pathName_(id) { return PATH_NAMES[id] || id; }
+
+  function calcSnapshot_() {
+    var st = window.__calcState, comp = window.__calcCompute;
+    if (!st || !comp) return null;
+    var r = comp();
+    var inputs = {};
+    var keys = st.path === "flip"
+      ? ["purchase", "rehab", "other", "sale", "holding", "volume", "hours"]
+      : ["fee", "unitCost", "holding", "volume", "hours"];
+    keys.forEach(function (k) { inputs[k] = st[k]; });
+    return {
+      path: st.path,
+      touched: calcTouched,
+      inputs: inputs,
+      results: {
+        profitPerDeal: Math.round(r.profit),
+        monthly: Math.round(r.monthly),
+        perHour: Math.round(r.perHour),
+        twelveMonth: Math.round(r.year)
+      }
+    };
+  }
+
+  function calcLines_(c) {
+    if (!c) return ["(calculator not loaded)"];
+    var i = c.inputs, out = [];
+    var label = { purchase: "Purchase", rehab: "Rehab", other: "Other costs", sale: "Sale price", fee: "Fee per job", unitCost: "Direct cost per job", holding: "Holding months", volume: "Deals or clients per month", hours: "Hours per week" };
+    out.push("Model: " + (CALC_NAMES[c.path] || c.path) + (c.touched ? " (they adjusted it)" : " (starting numbers, not adjusted)"));
+    out.push("Inputs: " + Object.keys(i).map(function (k) {
+      var v = (k === "holding" || k === "volume" || k === "hours") ? String(i[k]) : money(i[k]);
+      return label[k] + " " + v;
+    }).join(", "));
+    out.push("Results: profit per deal " + money(c.results.profitPerDeal) + ", monthly " + money(c.results.monthly) +
+      ", dollars per hour " + money(c.results.perHour) + ", 12-month sketch " + money(c.results.twelveMonth));
+    return out;
+  }
+
+  function collectTake_() {
+    var notes = {};
+    $all("[data-note]").forEach(function (t) {
+      var v = (t.value || "").trim();
+      if (v) notes[t.getAttribute("data-note")] = v;
+    });
+    var fromEl = document.querySelector('input[name="take-from"]:checked');
+    return {
+      from: fromEl ? fromEl.value : "Rosa and Josh",
+      picks: loadPicked(),
+      flipped: flippedSeen.slice(),
+      notes: notes,
+      wrong: (($("#take-wrong") && $("#take-wrong").value) || "").trim(),
+      calc: calcSnapshot_()
+    };
+  }
+
+  function takeText_(t, selftest) {
+    var L = [];
+    if (selftest) { L.push(SELFTEST_LABEL); L.push(""); }
+    L.push("Sent from the main Detroit page by: " + t.from);
+    L.push("Paths picked: " + (t.picks.length ? t.picks.map(pathName_).join("; ") : "none"));
+    L.push("Cards flipped to read the test: " + (t.flipped.length ? t.flipped.map(pathName_).join("; ") : "none"));
+    L.push("");
+    L.push("Mark the paths:");
+    var any = false;
+    Object.keys(PATH_NAMES).forEach(function (k) {
+      if (t.notes[k]) { any = true; L.push("- " + PATH_NAMES[k] + ": " + t.notes[k]); }
+    });
+    if (!any) L.push("(no notes)");
+    L.push("");
+    L.push("What did I get wrong?");
+    L.push(t.wrong || "(nothing written)");
+    L.push("");
+    L.push("Calculator:");
+    calcLines_(t.calc).forEach(function (x) { L.push(x); });
+    return L.join("\n");
+  }
+
+  function refreshTakeAuto_() {
+    var el = $("#take-auto");
+    if (!el) return;
+    var picks = loadPicked();
+    var c = calcSnapshot_();
+    var bits = [];
+    bits.push(picks.length ? "Picked: <strong>" + picks.map(function (p) { return pathName_(p).split(" · ")[0]; }).join(", ") + "</strong>" : "No paths picked yet");
+    if (c) bits.push("Calculator: <strong>" + (CALC_NAMES[c.path] || c.path) + "</strong>, " + money(c.results.monthly) + "/month sketch");
+    el.innerHTML = bits.join(" · ");
+  }
+
+  function setupTake_() {
+    var card = $("#take-card");
+    if (!card) return null;
+    var btn = $("#take-send");
+    var hint = $("#take-hint");
+    var thanks = $("#take-thanks");
+    refreshTakeAuto_();
+    document.addEventListener("click", function (e) {
+      if (e.target && e.target.closest && e.target.closest("[data-pick], .path-switch button")) setTimeout(refreshTakeAuto_, 0);
+    }, true);
+    document.addEventListener("change", function (e) {
+      if (e.target && e.target.matches && e.target.matches("[data-bind]")) refreshTakeAuto_();
+    }, true);
+
+    function send() {
+      var selftest = isSelftest_();
+      var t = collectTake_();
+      var hasSomething = t.picks.length || Object.keys(t.notes).length || t.wrong || (t.calc && t.calc.touched);
+      if (!hasSomething && !selftest) {
+        if (hint) hint.textContent = "Add a note, a pick, or a few words first, then tap Send.";
+        return Promise.resolve({ ok: false, error: "empty" });
+      }
+      logTap_("form", "take-send", "take");
+      btn.disabled = true;
+      if (hint) hint.textContent = "Sending…";
+      return postInbox_("submit", {
+        source_page: "index",
+        answers: [],
+        reactions: {},
+        comments: takeText_(t, selftest),
+        take: t
+      }).then(function (res) {
+        if (res && res.ok) {
+          card.hidden = true;
+          card.style.display = "none";
+          thanks.hidden = false;
+          try { thanks.focus({ preventScroll: true }); } catch (x) {}
+          thanks.scrollIntoView({ block: "center" });
+        } else {
+          btn.disabled = false;
+          if (hint) hint.textContent = "It didn’t go through. Please try again in a moment.";
+        }
+        return res;
+      }).catch(function (err) {
+        btn.disabled = false;
+        if (hint) hint.textContent = "It didn’t go through. Please try again in a moment.";
+        return { ok: false, error: String(err && err.message || err) };
+      });
+    }
+    btn.addEventListener("click", function (e) { e.preventDefault(); send(); });
+    return send;
+  }
+
+  function selftestBar_(text, cls) {
+    var bar = $("#selftest-bar");
+    if (!bar) {
+      bar = document.createElement("div");
+      bar.id = "selftest-bar";
+      bar.className = "selftest-bar";
+      bar.setAttribute("role", "status");
+      document.body.appendChild(bar);
+    }
+    bar.className = "selftest-bar" + (cls ? " " + cls : "");
+    bar.textContent = text;
+    window.__selftest = { text: text, state: cls || "running" };
+  }
+
+  function runSelftest_(sendTake) {
+    selftestBar_("SELFTEST running… sending a labeled test open event and a labeled test submission.");
+    var result = { open: null, submit: null };
+    openPing_().then(function (o) {
+      result.open = o;
+      if (!sendTake) return postInbox_("submit", { answers: [SELFTEST_LABEL, "", "", "", "", "", ""], reactions: {}, comments: SELFTEST_LABEL + " (input page)" });
+      $all("[data-note]").forEach(function (t) { t.value = "[SELFTEST] note for " + t.getAttribute("data-note"); });
+      if ($("#take-wrong")) $("#take-wrong").value = "[SELFTEST] What did I get wrong? This is an automated test, not Rosa or Josh.";
+      return sendTake();
+    }).then(function (s) {
+      result.submit = s;
+      var openOk = !!(result.open && result.open.ok);
+      var subOk = !!(s && s.ok && s.id && s.test === true);
+      var lines = [
+        (openOk && subOk ? "SELFTEST PASS" : "SELFTEST FAIL") + " (marked as test, not from Rosa or Josh)",
+        "open event: " + JSON.stringify(result.open),
+        "test submission: " + JSON.stringify(s)
+      ];
+      window.__selftestResult = result;
+      selftestBar_(lines.join("\n"), openOk && subOk ? "pass" : "fail");
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     setupReveal();
     setupTimeline();
@@ -773,7 +969,9 @@
     setupCalculator();
     setupInput();
     setupNavTaps_();
-    openPing_();
+    var sendTake = setupTake_();
+    if (isSelftest_()) runSelftest_(sendTake);
+    else openPing_();
     window.addEventListener("pagehide", function () { flushTaps_(); });
   });
 })();

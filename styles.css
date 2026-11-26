@@ -898,3 +898,69 @@ input[type="range"]::-moz-range-thumb {
 /* Flip cards size to their taller face so buttons never get covered */
 .path-inner { display: grid; height: auto; }
 .path-face { position: relative; inset: auto; grid-area: 1 / 1; min-height: 280px; }
+
+/* Send-your-take panel (index) */
+.take-card {
+  margin-top: 22px;
+  max-width: 820px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, var(--panel), var(--bg-2));
+  padding: 20px;
+  box-sizing: border-box;
+}
+.take-row { margin: 0 0 18px; }
+.take-label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin: 0 0 8px;
+}
+.take-auto { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+.take-auto strong { color: var(--text); font-weight: 600; }
+.take-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.take-note { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.take-note span { font-size: 13px; color: var(--text); }
+.take-card textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  color: var(--text);
+  resize: vertical;
+  max-height: 220px;
+}
+.take-card textarea:focus { outline: 2px solid var(--cyan); border-color: var(--cyan); }
+.take-send { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.take-send .hint, .take-thanks .hint { color: var(--muted); font-size: 13px; margin: 0; }
+.take-thanks {
+  margin-top: 22px;
+  max-width: 820px;
+  border: 1px solid var(--cyan);
+  box-shadow: 0 0 28px rgba(0,240,212,0.18);
+  padding: 22px;
+  box-sizing: border-box;
+  outline: none;
+}
+.take-thanks h3 { color: var(--cyan); margin: 0 0 8px; font-size: 26px; font-family: var(--display); font-weight: 800; letter-spacing: -0.02em; }
+.take-thanks p { margin: 0 0 8px; }
+.take-more { color: var(--muted); }
+.take-more a { color: var(--fire-2); }
+.take-band { margin-top: 26px; }
+.selftest-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
+  background: #1a1300; color: var(--amber);
+  border-top: 2px solid var(--amber);
+  font-family: var(--mono); font-size: 12px; line-height: 1.5;
+  padding: 10px 14px; white-space: pre-wrap;
+}
+.selftest-bar.pass { background: #04160d; color: var(--ok); border-color: var(--ok); }
+.selftest-bar.fail { background: #1a0509; color: var(--danger); border-color: var(--danger); }
+@media (max-width: 820px) {
+  .take-notes { grid-template-columns: 1fr; }
+  .take-card { padding: 16px; }
+  .take-send .btn { width: 100%; text-align: center; }
+}

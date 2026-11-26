@@ -5,8 +5,8 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Rosa &amp; Josh: Your Detroit Path · SuperWho</title>
-  <link rel="stylesheet" href="fonts.css?v=5">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="stylesheet" href="fonts.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <header class="site-header">
@@ -410,20 +410,60 @@
       </div>
     </section>
 
-    <section class="block" id="cta">
-      <div class="wrap cta-band">
-        <div>
-          <p class="sec-index">Next</p>
-          <h2>Your turn. Then we talk.</h2>
-          <p>Seven quick questions and a read on the five paths. There are no wrong answers — it just helps us plan the next steps together.</p>
+    <section class="block" id="take">
+      <div class="wrap">
+        <p class="sec-index">Next</p>
+        <h2>Your turn. Then we talk.</h2>
+        <p class="lede">Mark the paths and tell me what I got wrong, then send it over. The paths you picked and the calculator numbers you landed on come along with it, so we can start from where you are.</p>
+        <div class="take-card reveal" id="take-card">
+          <div class="take-row">
+            <p class="take-label">Coming along automatically</p>
+            <p class="take-auto" id="take-auto">Your picks and calculator numbers.</p>
+          </div>
+          <div class="take-row">
+            <p class="take-label">Mark the paths</p>
+            <div class="take-notes">
+            <label class="take-note"><span>Path 1 · Investor property research</span><textarea rows="2" data-note="research" maxlength="300" placeholder="Keep it, park it, or a question?"></textarea></label>
+            <label class="take-note"><span>Path 2 · Commercial property activation</span><textarea rows="2" data-note="activation" maxlength="300" placeholder="Keep it, park it, or a question?"></textarea></label>
+            <label class="take-note"><span>Path 3 · Deal sourcing / wholesaling</span><textarea rows="2" data-note="wholesale" maxlength="300" placeholder="Keep it, park it, or a question?"></textarea></label>
+            <label class="take-note"><span>Path 4 · Light residential renovations</span><textarea rows="2" data-note="reno" maxlength="300" placeholder="Keep it, park it, or a question?"></textarea></label>
+            <label class="take-note"><span>Path 5 · Land Bank rehabilitation</span><textarea rows="2" data-note="landbank" maxlength="300" placeholder="Keep it, park it, or a question?"></textarea></label>
+            </div>
+          </div>
+          <div class="take-row">
+            <label class="take-label" for="take-wrong">What did I get wrong?</label>
+            <textarea id="take-wrong" rows="4" maxlength="1200" placeholder="Anything that’s off, missing, or doesn’t sit right. Blunt is fine."></textarea>
+          </div>
+          <div class="take-row">
+            <p class="take-label">Who’s sending this?</p>
+            <div class="chips" id="take-from">
+              <label class="chip"><input type="radio" name="take-from" value="Rosa"><span>Rosa</span></label>
+              <label class="chip"><input type="radio" name="take-from" value="Josh"><span>Josh</span></label>
+              <label class="chip"><input type="radio" name="take-from" value="Rosa and Josh" checked><span>Both of us</span></label>
+            </div>
+          </div>
+          <div class="take-send">
+            <button class="btn fire" type="button" id="take-send">Send to Jim</button>
+            <p class="hint" id="take-hint">Nothing here commits you to anything.</p>
+          </div>
         </div>
-        <a class="btn fire" href="input.html">Share your thoughts</a>
+        <div class="take-thanks" id="take-thanks" hidden tabindex="-1">
+          <h3>Thank you. It’s on its way.</h3>
+          <p>Jim and the team will read every word and get back to you soon. We’ll work through it together from here.</p>
+          <p class="take-more">Got five more minutes? <a href="input.html">Answer seven quick questions</a> to help us plan the next step.</p>
+        </div>
+        <div class="cta-band take-band">
+          <div>
+            <p>Seven quick questions and a read on the five paths. There are no wrong answers. It just helps us plan the next steps together.</p>
+          </div>
+          <a class="btn" href="input.html">Share your thoughts</a>
+        </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">SuperWho by FireSnatchers · Private link for Rosa &amp; Josh</footer>
   <script src="vendor/chart.umd.min.js"></script>
-  <script src="site.js?v=5"></script>
+  <script src="site.js?v=6"></script>
 </body>
 </html>
